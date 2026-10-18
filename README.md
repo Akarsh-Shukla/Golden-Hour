@@ -4,7 +4,7 @@ Hackathon team repository for Cosmic Shades - [hackindia-team:hackindia-ai-cyber
 
 **A guided 60-minute recovery workflow for victims of online fraud, with a privacy-first Scam Radar.**
 
-Built for the **HackIndia AI & CyberTech Hackathon 2026** by Team **[TEAM NAME]** (4 first-semester BCA students).
+Built for the **HackIndia AI & CyberTech Hackathon 2026** by Team **[Cosmic Shades]** (4 first-semester BCA students).
 
 > Scammers steal from victims. We make sure that reporting a scam never exposes the victim again.
 
