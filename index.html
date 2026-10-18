@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Golden Hour - guided scam recovery</title>
+  <meta name="description" content="A 60-minute guided case file for victims of online fraud.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Golden Hour</div>
+    <p class="privacy-badge">Your case stays on this device</p>
+  </header>
+
+  <main id="main">
+
+    <!-- ===== START ===== -->
+    <section id="start" class="start">
+      <div class="start-copy">
+        <h1>The next 60 minutes matter most.</h1>
+        <p class="lede">Tell us what happened. We'll run the clock, walk you through each step, collect your evidence and draft your complaint.</p>
+        <ul class="promises">
+          <li>Your case stays on this device.</li>
+          <li>Nothing is shared unless you turn it on.</li>
+          <li>Delete everything in one tap.</li>
+        </ul>
+      </div>
+
+      <form id="startForm" class="card form" autocomplete="off">
+        <h2>Start your case</h2>
+
+        <label for="scamType">What kind of scam was it?</label>
+        <select id="scamType" name="scamType" required>
+          <option value="UPI or payment fraud">UPI or payment fraud</option>
+          <option value="Fake KYC or bank call">Fake KYC or bank call</option>
+          <option value="Card or OTP fraud">Card or OTP fraud</option>
+          <option value="Fake job or internship offer">Fake job or internship offer</option>
+          <option value="Online shopping fraud">Online shopping fraud</option>
+          <option value="Something else">Something else</option>
+        </select>
+
+        <div class="row">
+          <div>
+            <label for="amount">Amount lost (Rs.)</label>
+            <input id="amount" name="amount" type="number" min="0" inputmode="numeric" placeholder="8000">
+          </div>
+          <div>
+            <label for="minutesAgo">Minutes since it happened</label>
+            <input id="minutesAgo" name="minutesAgo" type="number" min="0" max="1440" inputmode="numeric" value="5" required>
+          </div>
+        </div>
+
+        <label for="keep">Keep this case for</label>
+        <select id="keep" name="keep">
+          <option value="24">24 hours, then delete it</option>
+          <option value="168">7 days, then delete it</option>
+        </select>
+
+        <label class="check">
+          <input id="consent" type="checkbox" required>
+          <span>I understand my case stays on this device. If I press Analyze with AI, the text (with OTPs and card numbers hidden) and up to 2 screenshots are sent to Google's Gemini AI, which on the free tier may use them to improve its products.</span>
+        </label>
+
+        <button class="btn btn-primary" type="submit">Start my case</button>
+        <button id="demoBtn" class="btn btn-quiet" type="button">Fill in demo data</button>
+      </form>
+    </section>
+
+    <!-- ===== DASHBOARD ===== -->
+    <section id="dashboard" class="dash" hidden>
+
+      <aside class="clock-card" id="clockCard" data-state="calm">
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 240 240" aria-hidden="true">
+            <circle class="ring-track" cx="120" cy="120" r="104"></circle>
+            <circle class="ring-bar" id="ringBar" cx="120" cy="120" r="104"></circle>
+          </svg>
+          <div class="ring-text" role="timer">
+            <span class="time" id="clockTime">60:00</span>
+            <span class="time-label" id="clockLabel">left in the first hour</span>
+          </div>
+        </div>
+        <p class="clock-note" id="clockNote"></p>
+
+        <div class="progress-block">
+          <div class="progress-line"><span id="progressText">0 of 7 steps done</span></div>
+          <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+        </div>
+
+        <button id="deleteBtn" class="link-btn" type="button">Delete this case</button>
+      </aside>
+
+      <section class="work">
+        <div class="tabs no-print" role="tablist" aria-label="Case sections">
+          <button role="tab" id="tab-steps" aria-controls="panel-steps" aria-selected="true">Steps</button>
+          <button role="tab" id="tab-evidence" aria-controls="panel-evidence" aria-selected="false" tabindex="-1">Evidence</button>
+          <button role="tab" id="tab-radar" aria-controls="panel-radar" aria-selected="false" tabindex="-1">Scam Radar</button>
+          <button role="tab" id="tab-complaint" aria-controls="panel-complaint" aria-selected="false" tabindex="-1">Complaint</button>
+        </div>
+
+        <!-- Steps -->
+        <div class="panel" id="panel-steps" role="tabpanel" aria-labelledby="tab-steps">
+          <h2>Do these in order</h2>
+          <p class="muted">Tick each step when it's done. Open a step to see how.</p>
+          <ol class="steps" id="stepsList"></ol>
+
+          <div class="dont">
+            <h3>Avoid these</h3>
+            <ul>
+              <li>Don't pay anyone who offers to "recover" your money.</li>
+              <li>Don't share an OTP, PIN or password again, with anyone.</li>
+              <li>Don't call a "helpline" you found in a search result or a message.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Evidence -->
+        <div class="panel" id="panel-evidence" role="tabpanel" aria-labelledby="tab-evidence" hidden>
+          <h2>Collect your evidence</h2>
+          <p class="notice">Never paste OTPs, passwords, PINs or full card numbers here. If we spot any, we hide them.</p>
+
+          <label for="evidenceText">Paste the scam message, chat or call notes</label>
+          <textarea id="evidenceText" rows="6" placeholder="Paste the message the scammer sent you"></textarea>
+
+          <label for="fileInput">Add screenshots (optional)</label>
+          <input id="fileInput" type="file" accept="image/*" multiple>
+          <p class="muted small">Screenshots stay in this tab until you press Analyze with AI. Then up to 2 are sent to Google's Gemini AI to read. Don't add screenshots that show OTPs, card numbers or other people's details.</p>
+          <ul class="thumbs" id="thumbs"></ul>
+
+          <div class="actions">
+            <button id="aiBtn" class="btn btn-primary" type="button">Analyze with AI</button>
+            <button id="findBtn" class="btn btn-quiet" type="button">Find details without AI</button>
+            <button id="sampleBtn" class="btn btn-quiet" type="button">Use a sample scam message</button>
+          </div>
+
+          <div id="aiResult" class="ai-result" aria-live="polite"></div>
+          <div id="redactNotice" class="notice warn" hidden></div>
+          <div id="found" class="found" aria-live="polite"></div>
+        </div>
+
+        <!-- Radar -->
+        <div class="panel" id="panel-radar" role="tabpanel" aria-labelledby="tab-radar" hidden>
+          <h2>Scam Radar</h2>
+          <p id="radarMode" class="mode demo" role="status"></p>
+          <p class="muted">See whether the scammer's phone number, UPI ID or link has been reported before. A count shows reports, not proof.</p>
+          <div id="radarResults"></div>
+
+          <div class="share-box">
+            <label class="check">
+              <input id="shareToggle" type="checkbox">
+              <span>Add the scammer's details to Scam Radar to protect others. Your name, amount and screenshots are never shared.</span>
+            </label>
+            <button id="shareBtn" class="btn btn-primary" type="button" disabled>Add to Scam Radar</button>
+          </div>
+
+          <h3>Reports on this radar</h3>
+          <p class="muted small">Demo data plus anything added on this device.</p>
+          <div class="table-wrap">
+            <table class="radar-table">
+              <thead><tr><th scope="col">Scammer detail</th><th scope="col">Type</th><th scope="col">Reports</th></tr></thead>
+              <tbody id="radarBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Complaint -->
+        <div class="panel" id="panel-complaint" role="tabpanel" aria-labelledby="tab-complaint" hidden>
+          <h2>Your complaint draft</h2>
+          <p class="muted no-print">Built only from what you entered. Read it, fix anything, then submit it through your bank or the official portal.</p>
+
+          <div class="row no-print">
+            <div>
+              <label for="txnId">Transaction ID (optional)</label>
+              <input id="txnId" type="text" placeholder="From your payment receipt">
+            </div>
+            <div>
+              <label for="yourName">Your name (optional)</label>
+              <input id="yourName" type="text" placeholder="As on your bank account">
+            </div>
+          </div>
+
+          <label class="no-print" for="notes">What happened, in your own words</label>
+          <textarea class="no-print" id="notes" rows="4" placeholder="Example: I got a call saying my KYC had expired, then clicked the link and paid a fee."></textarea>
+          <div class="actions no-print">
+            <button id="aiComplaintBtn" class="btn btn-quiet" type="button">Draft this with AI</button>
+          </div>
+          <p class="muted small no-print">The AI uses only the facts in your case. Read the draft and fix anything that isn't right.</p>
+
+          <div id="complaintOutput" class="complaint" tabindex="0"></div>
+
+          <div class="actions no-print">
+            <button id="copyBtn" class="btn btn-primary" type="button">Copy complaint</button>
+            <button id="downloadBtn" class="btn btn-quiet" type="button">Download as text</button>
+            <button id="printBtn" class="btn btn-quiet" type="button">Print or save as PDF</button>
+          </div>
+          <p class="muted small no-print">This draft is not filed for you. Golden Hour gives guidance, not legal advice, and can't promise your money will be recovered.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Hackathon prototype. Check helpline numbers and portal links on official government and bank sites before relying on them.</p>
+  </footer>
+
+  <dialog id="deleteDialog">
+    <form method="dialog">
+      <h2>Delete this case?</h2>
+      <p>This removes your notes, details and file names from this device. It can't be undone.</p>
+      <div class="actions">
+        <button class="btn btn-danger" value="delete">Delete case</button>
+        <button class="btn btn-quiet" value="keep">Keep case</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
