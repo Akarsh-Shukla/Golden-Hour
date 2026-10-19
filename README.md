@@ -1,10 +1,8 @@
-# hackindia-ai-cybertech-hackathon-2026-cosmic-shades
-Hackathon team repository for Cosmic Shades - [hackindia-team:hackindia-ai-cybertech-hackathon-2026:cosmic-shades]
 # Golden Hour
 
 **A guided 60-minute recovery workflow for victims of online fraud, with a privacy-first Scam Radar.**
 
-Built for the **HackIndia AI & CyberTech Hackathon 2026** by Team **[TEAM NAME]** (4 first-semester BCA students).
+Built for the **HackIndia AI & CyberTech Hackathon 2026** by Team **[Cosmic Shades]** (4 first-semester BCA students).
 
 > Scammers steal from victims. We make sure that reporting a scam never exposes the victim again.
 
@@ -60,7 +58,7 @@ flowchart LR
 - **Data minimisation.** The app never asks for Aadhaar, PAN or card numbers. It hides anything that looks like an OTP, PIN, password or card number **before** text is sent anywhere.
 - **Read-only radar for the public.** The radar table has a public read policy and **no** insert, update or delete policy. Reports can only be added through one database function that adds 1 to a count, so a visitor cannot edit or delete rows.
 - **AI safety.** Scam text is treated as untrusted data, so instructions hidden inside a message are not followed. The AI must return a fixed JSON format, the server checks and trims it, and the app re-validates every phone number, UPI ID and link itself. The AI is told never to promise recovery of money and never to invent facts.
-- **No secrets in the browser.** The browser holds only a public (publishable) Supabase key. The Gemini key is a server-side secret.
+- **No secrets in the browser.** `config.js` holds only public values (the Supabase URL and a publishable key), which protect nothing by being hidden. The data is protected by row-level security. The Gemini key is a server-side secret and is never in this repository.
 - **Safe rendering.** User text is shown with `textContent`, never as HTML.
 - **Counts are reports, not proof.** The interface says "reported", never "scammer".
 
@@ -74,7 +72,7 @@ You need a free [Supabase](https://supabase.com) project. The AI features also n
    cd hackindia-ai-cybertech-hackathon-2026-cosmic-shades
    ```
 2. **Set up the database.** In Supabase, open **SQL Editor**, paste the contents of [`supabase/schema.sql`](supabase/schema.sql) and run it. It creates the `radar` table, the security rules and a few fictional demo rows.
-3. **Add your Supabase details.** Copy `config.example.js` to `config.js` and fill in your project URL and publishable key. `config.js` is git-ignored.
+3. **Add your Supabase details.** Copy `config.example.js` to `config.js` and fill in your project URL and publishable key. These are public values, so the hosted demo commits its own `config.js`. **Never** put a secret key, a `service_role` key or a Gemini key in this file.
 4. **(Optional) Turn on the AI features.**
    - Create a Gemini API key. Google now requires Gemini keys to be bound to a service account. The easiest route is [Google AI Studio](https://aistudio.google.com/api-keys).
    - In Supabase, go to **Edge Functions > Secrets** and add `GEMINI_API_KEY`.
