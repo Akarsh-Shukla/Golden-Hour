@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Golden Hour - guided scam recovery</title>
+  <title>Golden Hour — Cybercrime Response Platform</title>
+  <meta name="theme-color" content="#0B1120">
   <meta name="description" content="A 60-minute guided case file for victims of online fraud.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,13 +24,21 @@
     <!-- ===== START ===== -->
     <section id="start" class="start">
       <div class="start-copy">
-        <h1>The next 60 minutes matter most.</h1>
+        <p class="eyebrow">Cybercrime incident response</p>
+        <h1>The next <span class="accent">60 minutes</span> matter most.</h1>
+        <p class="tagline">Every Second Matters. Every Action Counts.</p>
         <p class="lede">Tell us what happened. We'll run the clock, walk you through each step, collect your evidence and draft your complaint.</p>
         <ul class="promises">
           <li>Your case stays on this device.</li>
           <li>Nothing is shared unless you turn it on.</li>
           <li>Delete everything in one tap.</li>
         </ul>
+        <ol class="flow" aria-label="How Golden Hour works">
+          <li><strong>Start the clock</strong>60-minute case timer</li>
+          <li><strong>Follow steps</strong>7-step checklist</li>
+          <li><strong>Save evidence</strong>Find scammer details</li>
+          <li><strong>Draft complaint</strong>Ready to submit</li>
+        </ol>
       </div>
 
       <form id="startForm" class="card form" autocomplete="off">
@@ -64,7 +73,7 @@
 
         <label class="check">
           <input id="consent" type="checkbox" required>
-          <span>I understand my case stays on this device. If I press Analyze with AI, the text (with OTPs and card numbers hidden) and up to 2 screenshots are sent to Google's Gemini AI, which on the free tier may use them to improve its products.</span>
+          <span>I understand my case stays on this device.I agree to the [Terms and Conditions] and [Privacy Policy]. I understand that Golden Hour provides AI-generated cybersecurity guidance and complaint drafts for informational purposes only. I am responsible for verifying the information before taking action, and using this service does not automatically submit a complaint to any official authority. </span>
         </label>
 
         <button class="btn btn-primary" type="submit">Start my case</button>
@@ -206,6 +215,7 @@
   </main>
 
   <footer class="foot">
+    <p class="foot-tag">Golden Hour · Every Second Matters. Every Action Counts.</p>
     <p>Hackathon prototype. Check helpline numbers and portal links on official government and bank sites before relying on them.</p>
   </footer>
 
