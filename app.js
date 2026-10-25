@@ -494,7 +494,7 @@ $('#shareBtn').addEventListener('click', async () => {
     : 'Already added from this case.');
 });
 
-/* ---------- AI (Gemini, called through a Supabase Edge Function) ---------- */
+/* ---------- AI (Groq, called through a Supabase Edge Function) ---------- */
 function aiReady() { return Boolean(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY); }
 
 async function callAI(payload) {
@@ -507,15 +507,36 @@ async function callAI(payload) {
   if (!res.ok || !data || data.error) throw new Error((data && data.error) || ('http_' + res.status));
   return data;
 }
-
 function aiErrorMessage(err) {
-  const m = String(err && err.message);
-  if (m === 'busy') return 'The AI is busy. Wait a minute and try again, or use Find details without AI.';
-  if (m === 'server_not_configured') return 'The AI key is missing on the server. Check the GEMINI_API_KEY secret.';
-  if (m.startsWith('http_401') || m.startsWith('http_403')) return 'The server refused the request. Check the function\'s JWT setting.';
-  if (m.startsWith('http_404')) return 'The AI function was not found. Deploy a function named analyze.';
-  return "The AI isn't available right now. Use Find details without AI instead.";
+  const m = String(err && err.message || "");
+
+  if (m === "busy" || m.includes("usage limit reached")) {
+    return "Golden Hour AI is busy or has reached its usage limit. Please try again later.";
+  }
+
+  if (m === "server_not_configured") {
+    return "Golden Hour AI is not configured. Check the Golden_Hour secret in Supabase.";
+  }
+
+  if (m.includes("Screenshot analysis is not enabled")) {
+    return "Screenshot analysis is not available yet. For now, paste the suspicious message as text.";
+  }
+
+  if (m.startsWith("http_401") || m.startsWith("http_403")) {
+    return "The request was refused. Check your Supabase function authentication settings.";
+  }
+
+  if (m.startsWith("http_404")) {
+    return "The AI function was not found. Check that the analyze function is deployed.";
+  }
+
+  if (m.startsWith("http_429")) {
+    return "Too many requests. Please wait a little and try again.";
+  }
+
+  return "Golden Hour AI is temporarily unavailable. Please try again or use Find details without AI.";
 }
+
 
 function renderAI() {
   const box = $('#aiResult');
