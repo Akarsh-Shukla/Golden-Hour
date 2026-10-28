@@ -3,7 +3,7 @@
 // The Groq key is a server-side secret. Set the secret under the SAME name your existing `analyze` function uses,
 // or change GROQ_SECRET_NAME below. Nothing is logged or stored here.
 const GROQ_SECRET_NAME = "GROQ_API_KEY";
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "qwen/qwen3.8-27b";
 const MAX_CHARS = 4000;
 
 const cors = {
