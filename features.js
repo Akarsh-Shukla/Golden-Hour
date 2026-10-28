@@ -85,31 +85,13 @@
     });
   };
 
-  /* Supabase values come from the existing config.js (read-only). It tries the usual names, then any global
-     object that holds a *.supabase.co URL, because const/let globals are not on `window`. */
+  /* Supabase values come from the existing config.js. If your config uses other names, edit ONLY this function. */
   GHX.getConfig = function () {
-    var pick = function (c) {
-      if (!c || typeof c !== 'object') return null;
-      var url = c.supabaseUrl || c.SUPABASE_URL || c.supabase_url || c.url || '';
-      var key = c.supabaseKey || c.SUPABASE_ANON_KEY || c.SUPABASE_KEY || c.supabaseAnonKey || c.anonKey || c.publishableKey || c.SUPABASE_PUBLISHABLE_KEY || c.key || '';
-      return /^https?:\/\//.test(String(url)) && key ? { url: String(url).replace(/\/+$/, ''), key: String(key) } : null;
+    var c = window.GOLDEN_HOUR_CONFIG || window.GH_CONFIG || window.APP_CONFIG || window.CONFIG || window.config || {};
+    return {
+      url: String(c.supabaseUrl || c.SUPABASE_URL || c.url || '').replace(/\/+$/, ''),
+      key: c.supabaseKey || c.SUPABASE_ANON_KEY || c.SUPABASE_KEY || c.supabaseAnonKey || c.anonKey || ''
     };
-    var names = ['GOLDEN_HOUR_CONFIG', 'GH_CONFIG', 'APP_CONFIG', 'CONFIG', 'config', 'GH', 'SUPABASE_CONFIG'];
-    var i, r, w = window;
-    for (i = 0; i < names.length; i++) { r = pick(w[names[i]]); if (r) return r; }
-    try {
-      /* plain globals declared with const/let in config.js */
-      /* eslint-disable no-undef */
-      var u = typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : (typeof supabaseUrl !== 'undefined' ? supabaseUrl : '');
-      var k = typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : (typeof SUPABASE_KEY !== 'undefined' ? SUPABASE_KEY : (typeof supabaseKey !== 'undefined' ? supabaseKey : (typeof SUPABASE_PUBLISHABLE_KEY !== 'undefined' ? SUPABASE_PUBLISHABLE_KEY : '')));
-      /* eslint-enable no-undef */
-      if (u && k) return { url: String(u).replace(/\/+$/, ''), key: String(k) };
-    } catch (e) { /* not defined */ }
-    var keys = Object.keys(w);
-    for (i = 0; i < keys.length; i++) {
-      try { r = pick(w[keys[i]]); if (r && /supabase\.co|supabase\.in|localhost|127\.0\.0\.1/.test(r.url)) return r; } catch (e) { /* cross-origin or getter */ }
-    }
-    return { url: '', key: '' };
   };
 })();
 
@@ -367,7 +349,6 @@
   hi['Phishing awareness'] = 'फ़िशिंग जागरूकता';
   hi['Toolkit sections'] = 'टूलकिट अनुभाग';
   hi['Keeps working offline: emergency links and your local cases. Only AI needs the internet.'] = 'ऑफ़लाइन भी चलता है: आपातकालीन लिंक और आपके लोकल केस। केवल AI को इंटरनेट चाहिए।';
-  hi['Open full case workspace'] = 'पूरा केस वर्कस्पेस खोलें';
   hi['File'] = 'फ़ाइल'; hi['Type'] = 'प्रकार'; hi['Added'] = 'जोड़ा गया';
 })();
 
@@ -496,11 +477,6 @@
   };
 
   /* POST to the Edge Function. Always resolves {ok:true,data} or {ok:false,message}; never throws. */
-  function authHeaders(key) {
-    var hd = { 'Content-Type': 'application/json', apikey: key };
-    if (/^eyJ/.test(key)) hd.Authorization = 'Bearer ' + key; /* legacy anon key is a JWT; sb_publishable_ keys are not */
-    return hd;
-  }
   GHX.ai.call = function (task, text, extra) {
     var t = GHX.t;
     if (!navigator.onLine) return Promise.resolve({ ok: false, message: t('You are offline. Everything else still works. Try AI again when you are connected.') });
@@ -509,7 +485,7 @@
     var ctl = new AbortController(), timer = setTimeout(function () { ctl.abort(); }, 25000);
     return fetch(cfg.url + '/functions/v1/scam-analyze', {
       method: 'POST', signal: ctl.signal,
-      headers: authHeaders(cfg.key),
+      headers: { 'Content-Type': 'application/json', apikey: cfg.key, Authorization: 'Bearer ' + cfg.key },
       body: JSON.stringify({ task: task, text: text, lang: GHX.lang, extra: extra || {} })
     }).then(function (r) {
       if (r.status === 429) return { ok: false, message: t('Too many requests right now. Wait a minute and try again.') };
@@ -1316,7 +1292,7 @@
       .concat(GHX.samples.map(function (s, i) { return h('option', { value: String(i), text: s.name }); })));
     sampleSel.addEventListener('change', function () { if (sampleSel.value !== '') { msg.value = GHX.samples[+sampleSel.value].text; url.value = ''; } });
 
-    var show = function (nodes) { GHX.clear(out); out.hidden = false; nodes.forEach(function (n) { if (n) out.appendChild(n); }); };
+    var show = function (nodes) { GHX.clear(out); out.hidden = false; nodes.forEach(function (n) { out.appendChild(n); }); };
     var list = function (title, items, cls) { return items.length ? h('div', {}, [h('h4', { text: title }), h('ul', { class: cls || 'ghx-steps' }, items.map(function (s) { return h('li', { text: s }); }))]) : null; };
     var disc = function () { return h('p', { class: 'muted small', text: t('This is automated guidance, not proof. It cannot tell if a link or a person is safe or criminal.') }); };
 
@@ -1439,74 +1415,3 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 
-/* ===== bridge.js ===== */
-/* Golden Hour - bridge.js
-   Joins the original "Start your case" flow with the Toolkit WITHOUT touching app.js:
-   - when #startForm is submitted, a matching case is created in the Toolkit (IndexedDB) from the same inputs
-   - the dashboard gets an "Open full case workspace" button (complaint studio, tracker, evidence)
-   - "Delete this case" in the dashboard also deletes the linked Toolkit case
-   - the 24h / 7-day auto-delete choice is honoured for the linked case
-   Everything is wrapped so a failure here can never break the original app. */
-(function () {
-  'use strict';
-  var GHX = window.GHX, h = GHX.h, t = GHX.t;
-  var LINK = 'gh_linked_case';
-  var getLink = function () { try { return localStorage.getItem(LINK) || ''; } catch (e) { return ''; } };
-  var setLink = function (v) { try { if (v) localStorage.setItem(LINK, v); else localStorage.removeItem(LINK); } catch (e) { /* ignore */ } };
-  var val = function (id) { var el = document.getElementById(id); return el ? el.value : ''; };
-
-  function typeFor(scam, amount) {
-    if (amount > 0) return 'financial';
-    return /kyc/i.test(scam) ? 'phishing' : 'other';
-  }
-
-  function removeLinked() {
-    var id = getLink();
-    setLink('');
-    return id ? GHX.db.deleteCase(id).catch(function () {}) : Promise.resolve();
-  }
-
-  function createFromForm() {
-    var amount = parseInt(val('amount'), 10) || 0;
-    var mins = parseInt(val('minutesAgo'), 10); if (isNaN(mins) || mins < 0) mins = 0;
-    var keep = parseInt(val('keep'), 10) || 24;
-    var scam = val('scamType');
-    return removeLinked().then(function () {
-      var c = GHX.newCase(typeFor(scam, amount), new Date(Date.now() - mins * 60000).toISOString(), 'unsure', false);
-      c.facts.amount = amount ? String(amount) : '';
-      c.scamType = scam; c.source = 'start-form';
-      c.expiresAt = new Date(Date.now() + keep * 3600000).toISOString();
-      return GHX.db.putCase(c).then(function () { setLink(c.id); });
-    });
-  }
-
-  function purgeExpired() {
-    return GHX.db.listCases().then(function (all) {
-      return Promise.all(all.filter(function (c) { return !c.demo && c.expiresAt && Date.parse(c.expiresAt) < Date.now(); })
-        .map(function (c) { if (c.id === getLink()) setLink(''); return GHX.db.deleteCase(c.id); }));
-    });
-  }
-
-  function addButton() {
-    var card = document.getElementById('clockCard');
-    if (!card || document.getElementById('ghxOpenWs')) return;
-    var btn = h('button', { class: 'btn btn-quiet', type: 'button', id: 'ghxOpenWs', text: t('Open full case workspace'), onclick: function () {
-      var id = getLink(); if (id && GHX.openCase) GHX.openCase(id);
-      GHX.openToolkit('cases');
-    } });
-    card.insertBefore(btn, document.getElementById('deleteBtn'));
-    GHX.on('lang', function () { btn.textContent = t('Open full case workspace'); });
-  }
-
-  function boot() {
-    try {
-      addButton();
-      var form = document.getElementById('startForm');
-      if (form) form.addEventListener('submit', function () { createFromForm().catch(function () { /* storage blocked: original flow still works */ }); });
-      var dlg = document.getElementById('deleteDialog');
-      if (dlg) dlg.addEventListener('close', function () { if (dlg.returnValue === 'delete') removeLinked(); });
-      GHX.db.ready().then(function (ok) { if (ok) purgeExpired().catch(function () {}); });
-    } catch (e) { if (window.console) console.warn('Golden Hour bridge failed to start', e && e.message); }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-})();

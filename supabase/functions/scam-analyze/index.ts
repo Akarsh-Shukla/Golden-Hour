@@ -1,19 +1,10 @@
 // Golden Hour - Supabase Edge Function: scam-analyze (NEW; the existing `analyze` function is untouched)
-// Deploy as a separate function named exactly `scam-analyze` (the Toolkit in features.js calls /functions/v1/scam-analyze).
-// If your project uses a publishable key (sb_publishable_...), turn OFF "Verify JWT" for this function; with the legacy anon key you may leave it on.
 // Two tasks: "analyze" (scam text -> structured JSON) and "draft" (polish a complaint the user already wrote).
 // The Groq key is a server-side secret. Set the secret under the SAME name your existing `analyze` function uses,
 // or change GROQ_SECRET_NAME below. Nothing is logged or stored here.
-// The key is read from the first of these secret names that is set, so you do not have to rename the secret
-// you already created for the existing `analyze` function. Add yours to the list if it is different.
-const GROQ_SECRET_NAMES = ["GROQ_API_KEY", "GROQ_KEY", "GOLDEN_HOUR_KEY", "GOLDEN_HOUR_API_KEY"];
-const readKey = () => {
-  for (const n of GROQ_SECRET_NAMES) { const v = Deno.env.get(n); if (v) return v; }
-  return "";
-};
+const GROQ_SECRET_NAME = "GROQ_API_KEY";
 const MODEL = "llama-3.3-70b-versatile";
-const MAX_CHARS = 4000;        // scam text
-const MAX_DRAFT_CHARS = 8000;  // a complaint draft with timeline and evidence list is longer than a scam message
+const MAX_CHARS = 4000;
 
 const cors = {
   "Access-Control-Allow-Origin": "*", // tighten to your deployed origin before the public demo
@@ -46,25 +37,24 @@ Reply with ONE JSON object: {"draft": string}. Write the draft in the requested 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
-  const key = readKey();
+  const key = Deno.env.get(GROQ_SECRET_NAME);
   if (!key) return json({ error: "not_configured" }, 500);
 
   let body: { task?: string; text?: string; lang?: string; extra?: { outLang?: string } };
   try { body = await req.json(); } catch { return json({ error: "bad_json" }, 400); }
   const task = body.task === "draft" ? "draft" : body.task === "analyze" ? "analyze" : "";
-  if (!task) return json({ error: "bad_input" }, 400);
-  const text = typeof body.text === "string" ? scrub(body.text.slice(0, task === "draft" ? MAX_DRAFT_CHARS : MAX_CHARS)).trim() : "";
-  if (!text) return json({ error: "bad_input" }, 400);
+  const text = typeof body.text === "string" ? scrub(body.text.slice(0, MAX_CHARS)).trim() : "";
+  if (!task || !text) return json({ error: "bad_input" }, 400);
   const lang = (task === "draft" ? body.extra?.outLang : body.lang) === "hi" ? "hi" : "en";
 
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), 22000); // the browser gives up at 25s
+  const timer = setTimeout(() => ctl.abort(), 20000);
   try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", signal: ctl.signal,
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: MODEL, temperature: 0.1, max_tokens: task === "draft" ? 3000 : 900, response_format: { type: "json_object" },
+        model: MODEL, temperature: 0.1, max_tokens: 900, response_format: { type: "json_object" },
         messages: [
           { role: "system", content: task === "draft" ? DRAFT_SYSTEM : ANALYZE_SYSTEM },
           { role: "user", content: `Language: ${lang}\n<data>\n${text}\n</data>` },
