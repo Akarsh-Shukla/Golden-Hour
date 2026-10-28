@@ -4,19 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Golden Hour — Cybercrime Response Platform</title>
-  <meta name="theme-color" content="#0B1120">
+  <meta name="theme-color" content="#0B1120" id="metaTheme">
+  <script>(function(){try{var t=localStorage.getItem("goldenHour_theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);if(t==="light"){document.getElementById("metaTheme").setAttribute("content","#F2F5FA");}}}catch(e){}})();</script>
   <meta name="description" content="A 60-minute guided case file for victims of online fraud.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
+  <div class="bg-layers" aria-hidden="true"><i class="orb orb-1"></i><i class="orb orb-2"></i><i class="orb orb-3"></i></div>
+
   <header class="top">
     <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Golden Hour</div>
-    <p class="privacy-badge">Your case stays on this device</p>
+    <div class="top-actions">
+      <p class="privacy-badge">Your case stays on this device</p>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.8 6.8 0 0 0 9.7 9.7z"/></svg>
+      </button>
+    </div>
+    <span class="scroll-progress" aria-hidden="true"></span>
   </header>
 
   <main id="main">
@@ -24,6 +34,13 @@
     <!-- ===== START ===== -->
     <section id="start" class="start">
       <div class="start-copy">
+        <svg class="hero-dial" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
+          <defs><linearGradient id="dialGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B942"/><stop offset="1" stop-color="#40D9D0" stop-opacity=".25"/></linearGradient></defs>
+          <circle class="dial-ticks" cx="200" cy="200" r="170"/>
+          <circle class="dial-major" cx="200" cy="200" r="170"/>
+          <circle class="dial-ring" cx="200" cy="200" r="140"/>
+          <circle class="dial-sweep" cx="200" cy="200" r="140"/>
+        </svg>
         <p class="eyebrow">Cybercrime incident response</p>
         <h1>The next <span class="accent">60 minutes</span> matter most.</h1>
         <p class="tagline">Every Second Matters. Every Action Counts.</p>
@@ -87,6 +104,8 @@
       <aside class="clock-card" id="clockCard" data-state="calm">
         <div class="ring-wrap">
           <svg class="ring" viewBox="0 0 240 240" aria-hidden="true">
+            <defs><linearGradient id="ghRingGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--gold-hi)"/><stop offset="1" style="stop-color:var(--gold)"/></linearGradient></defs>
+            <circle class="ring-ticks" cx="120" cy="120" r="116"></circle>
             <circle class="ring-track" cx="120" cy="120" r="104"></circle>
             <circle class="ring-bar" id="ringBar" cx="120" cy="120" r="104"></circle>
           </svg>
@@ -119,7 +138,7 @@
           <p class="muted">Tick each step when it's done. Open a step to see how.</p>
           <ol class="steps" id="stepsList"></ol>
 
-          <div class="dont">
+          <div class="dont" data-reveal>
             <h3>Avoid these</h3>
             <ul>
               <li>Don't pay anyone who offers to "recover" your money.</li>
@@ -149,6 +168,7 @@
           </div>
 
           <div id="aiResult" class="ai-result" aria-live="polite"></div>
+          <div id="aiSkeleton" class="skeleton-card" hidden aria-hidden="true"><span class="sk sk-pill"></span><span class="sk sk-w90"></span><span class="sk sk-w75"></span><span class="sk sk-w55"></span></div>
           <div id="redactNotice" class="notice warn" hidden></div>
           <div id="found" class="found" aria-live="polite"></div>
         </div>
@@ -160,7 +180,7 @@
           <p class="muted">See whether the scammer's phone number, UPI ID or link has been reported before. A count shows reports, not proof.</p>
           <div id="radarResults"></div>
 
-          <div class="share-box">
+          <div class="share-box" data-reveal>
             <label class="check">
               <input id="shareToggle" type="checkbox">
               <span>Add the scammer's details to Scam Radar to protect others. Your name, amount and screenshots are never shared.</span>
@@ -170,7 +190,7 @@
 
           <h3>Reports on this radar</h3>
           <p class="muted small">Demo data plus anything added on this device.</p>
-          <div class="table-wrap">
+          <div class="table-wrap" data-reveal>
             <table class="radar-table">
               <thead><tr><th scope="col">Scammer detail</th><th scope="col">Type</th><th scope="col">Reports</th></tr></thead>
               <tbody id="radarBody"></tbody>
@@ -201,6 +221,7 @@
           </div>
           <p class="muted small no-print">The AI uses only the facts in your case. Read the draft and fix anything that isn't right.</p>
 
+          <div id="complaintSkeleton" class="skeleton-card no-print" hidden aria-hidden="true"><span class="sk sk-w90"></span><span class="sk sk-w75"></span><span class="sk sk-w55"></span></div>
           <div id="complaintOutput" class="complaint" tabindex="0"></div>
 
           <div class="actions no-print">
@@ -214,7 +235,7 @@
     </section>
   </main>
 
-  <footer class="foot">
+  <footer class="foot" data-reveal>
     <p class="foot-tag">Golden Hour · Every Second Matters. Every Action Counts.</p>
     <p>Hackathon prototype. Check helpline numbers and portal links on official government and bank sites before relying on them.</p>
   </footer>
@@ -235,5 +256,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>
