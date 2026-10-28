@@ -9,7 +9,8 @@
   <meta name="description" content="A 60-minute guided case file for victims of online fraud.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- one stylesheet: the original design + the merged toolkit rules (all prefixed .ghx-) -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,6 +21,7 @@
   <header class="top">
     <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Golden Hour</div>
     <div class="top-actions">
+      <!-- features.js adds the Toolkit button and the language switch here -->
       <p class="privacy-badge">Your case stays on this device</p>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme">
         <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>
@@ -28,6 +30,9 @@
     </div>
     <span class="scroll-progress" aria-hidden="true"></span>
   </header>
+
+  <!-- emergency numbers must never depend on JavaScript -->
+  <noscript><p class="notice warn" style="margin:1rem auto;max-width:1100px">Financial cyber fraud? Call <a href="tel:1930">1930</a> now or report at <a href="https://cybercrime.gov.in/" rel="noopener noreferrer">cybercrime.gov.in</a>. Golden Hour needs JavaScript for everything else.</p></noscript>
 
   <main id="main">
 
@@ -121,6 +126,7 @@
           <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
         </div>
 
+        <!-- features.js inserts "Open full case workspace" here, just above the delete button -->
         <button id="deleteBtn" class="link-btn" type="button">Delete this case</button>
       </aside>
 
@@ -235,6 +241,8 @@
     </section>
   </main>
 
+  <!-- features.js inserts the Toolkit view (#ghxToolkit) right here, after <main> -->
+
   <footer class="foot" data-reveal>
     <p class="foot-tag">Golden Hour · Every Second Matters. Every Action Counts.</p>
     <p>Hackathon prototype. Check helpline numbers and portal links on official government and bank sites before relying on them.</p>
@@ -253,9 +261,11 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <!-- load order matters: app.js (unchanged) -> ui.js (unchanged) -> features.js (toolkit + bridge) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
   <script src="ui.js"></script>
+  <script src="features.js"></script>
 </body>
 </html>

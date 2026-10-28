@@ -703,3 +703,109 @@ dialog p { color: var(--text-2); }
   body.print-complaint h2 { color: #000; }
   body.print-complaint .complaint { border: 0; padding: 0; font-size: 12pt; background: #fff; color: #000; font-family: serif; box-shadow: none; }
 }
+
+/* ---------- 20. toolkit + emergency (merged from features.css; all selectors prefixed .ghx-) ---------- */
+/* Golden Hour - features/features.css
+   Additive styles only (all selectors prefixed .ghx-). Reuses the tokens and .btn/.card/.notice classes
+   from style.css, so the light/dark themes keep working. Loaded AFTER style.css. */
+.ghx-toolkit, .ghx-emergency { max-width: 1100px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
+.ghx-toolkit { padding-block: 1.2rem 5rem; position: relative; z-index: 1; }
+
+/* emergency card */
+.ghx-emergency { margin-block: 1rem 0; padding: 1.1rem clamp(1rem, 3vw, 1.6rem); border: 1px solid var(--alert-line); background: linear-gradient(180deg, var(--alert-soft), var(--glass-2)); border-radius: 18px; position: relative; z-index: 1; max-width: min(1100px, calc(100% - 2rem)); }
+.ghx-em-head h2 { font-family: var(--font-display); font-size: clamp(1.25rem, 3.4vw, 1.7rem); margin: 0 0 .2rem; color: var(--text); }
+.ghx-em-head p, .ghx-em-note { margin: 0; color: var(--text-2); }
+.ghx-em-note { font-size: .85rem; margin-top: .7rem; }
+.ghx-em-actions, .ghx-strip, .ghx-toolkit .actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .8rem; align-items: center; }
+.ghx-em-actions .btn, .ghx-strip .btn, .ghx-bar a { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; }
+.ghx-callwrap { display: inline-flex; align-items: center; gap: .6rem; }
+.ghx-number { font-family: var(--font-mono); font-size: 1.8rem; color: var(--alert-text); letter-spacing: .04em; }
+.ghx-em-pick { margin-top: 1rem; padding-top: .8rem; border-top: 1px solid var(--line-2); }
+.ghx-em-pick h3 { margin: .8rem 0 .3rem; font-size: 1rem; }
+.ghx-steps { margin: .4rem 0 .8rem 1.2rem; padding: 0; display: grid; gap: .4rem; color: var(--text); }
+
+/* bottom emergency bar (phones) */
+.ghx-bar { display: none; }
+@media (max-width: 720px) {
+  .ghx-bar { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: .4rem; position: fixed; inset: auto 0 0 0; z-index: 60; padding: .5rem .6rem calc(.5rem + env(safe-area-inset-bottom, 0px)); background: var(--header-bg-solid); border-top: 1px solid var(--alert-line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .ghx-bar a { border-radius: 12px; border: 1px solid var(--line-3); color: var(--text); font-weight: 700; font-size: .95rem; }
+  .ghx-bar .ghx-b-call { background: var(--alert); color: var(--alert-ink); border-color: var(--alert); }
+  body { padding-bottom: 72px; }
+}
+
+/* header additions */
+.ghx-lang { width: auto; min-height: 40px; padding: .3rem 1.6rem .3rem .6rem; margin: 0; }
+.ghx-tk { min-height: 40px; padding-block: .3rem; }
+
+/* toolkit shell */
+.ghx-tkhead { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; }
+.ghx-tkhead h1 { font-size: clamp(1.4rem, 4vw, 2rem); margin: 0; }
+.ghx-tabs, .ghx-subtabs { display: flex; gap: .3rem; overflow-x: auto; margin: 1rem 0 .8rem; border-bottom: 1px solid var(--line-2); scrollbar-width: thin; }
+.ghx-tabs button, .ghx-subtabs button { background: none; border: 0; border-bottom: 3px solid transparent; color: var(--text-2); font: inherit; font-weight: 600; padding: .7rem .9rem; min-height: 44px; cursor: pointer; white-space: nowrap; }
+.ghx-tabs button[aria-selected="true"], .ghx-subtabs button[aria-selected="true"] { color: var(--gold-text); border-bottom-color: var(--gold); }
+.ghx-tabs button:focus-visible, .ghx-subtabs button:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+.ghx-panel .card, .ghx-section .card { margin-block: .8rem; padding: 1rem 1.1rem; }
+.ghx-form input[type="text"], .ghx-form input[type="number"], .ghx-form input[type="date"], .ghx-form input[type="datetime-local"], .ghx-form select, .ghx-form textarea, .ghx-evlist input[type="text"], .ghx-panel textarea, .ghx-panel select { width: 100%; }
+.ghx-form input[type="datetime-local"], .ghx-form input[type="date"], .ghx-evlist input[type="text"] { min-height: 46px; padding: .6rem .8rem; border-radius: 12px; border: 1px solid var(--line-2); background: var(--input-bg); color: var(--text); font: inherit; }
+.ghx-form input[type="datetime-local"]:focus, .ghx-form input[type="date"]:focus, .ghx-evlist input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 4px var(--cyan-soft); }
+
+/* case list / casehead / lists */
+.ghx-caselist, .ghx-timeline, .ghx-evlist, .ghx-tasks, .ghx-check { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: .5rem; }
+.ghx-caseitem { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem; align-items: center; }
+.ghx-casehead { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; justify-content: space-between; margin: .4rem 0; }
+.ghx-casehead h3 { margin: 0; font-family: var(--font-mono); font-size: 1.05rem; }
+.ghx-empty { color: var(--text-2); padding: .6rem 0; }
+.ghx-timeline li { display: grid; grid-template-columns: minmax(9rem, auto) 1fr auto; gap: .6rem; align-items: baseline; padding: .4rem 0; border-bottom: 1px solid var(--line); }
+.ghx-timeline time { color: var(--cyan-text); font-size: .85rem; font-family: var(--font-mono); }
+@media (max-width: 560px) { .ghx-timeline li { grid-template-columns: 1fr; } }
+.ghx-urgent summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+.ghx-chip { display: inline-block; font-size: .72rem; font-weight: 700; padding: .15rem .55rem; border-radius: 999px; border: 1px solid var(--line-3); color: var(--text-2); margin-left: .5rem; }
+.ghx-chip.demo, .ghx-chip.risk-medium { color: var(--warn-text); border-color: var(--warn-line); background: var(--warn-soft); }
+.ghx-chip.risk-high { color: var(--alert-text); border-color: var(--alert-line); background: var(--alert-soft); }
+.ghx-chip.risk-low { color: var(--safe-text); border-color: var(--safe-line); background: var(--safe-soft); }
+.ghx-check li { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.ghx-mark { width: 1.5rem; height: 1.5rem; display: inline-grid; place-items: center; border-radius: 50%; font-weight: 800; }
+.ghx-check .ok .ghx-mark { background: var(--safe); color: var(--safe-ink); }
+.ghx-check .bad .ghx-mark { background: var(--alert); color: var(--alert-ink); }
+.ghx-check .warn .ghx-mark { background: var(--warn); color: #231a00; }
+.ghx-handoff { border-color: var(--warn-line) !important; background: var(--warn-soft) !important; }
+.ghx-handoff h3 { color: var(--warn-text); margin-top: 0; }
+
+/* audit + analyzer */
+.ghx-q { border: 1px solid var(--line-2); border-radius: 14px; padding: .7rem .9rem; margin: .6rem 0; }
+.ghx-q legend { font-weight: 600; padding-inline: .3rem; }
+.ghx-opts { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ghx-opt { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .3rem .9rem; border: 1px solid var(--line-3); border-radius: 999px; cursor: pointer; margin: 0; font-weight: 500; }
+.ghx-opt:has(input:checked) { border-color: var(--gold); background: var(--gold-soft); }
+.ghx-opt input { accent-color: var(--gold); width: 18px; height: 18px; margin: 0; }
+.ghx-result .progress { height: 10px; border-radius: 999px; background: var(--track); overflow: hidden; margin: .4rem 0 1rem; }
+.ghx-result .progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); }
+.ghx-snips li { font-family: var(--font-mono); font-size: .85rem; color: var(--cyan-text); }
+
+/* dialog + toast */
+.ghx-dialog { width: 100%; max-width: min(560px, 94vw); }
+.ghx-dialog textarea { width: 100%; margin-top: .6rem; }
+.ghx-toast { position: fixed; left: 50%; bottom: 1.25rem; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: var(--glass-2); color: var(--text); border: 1px solid var(--gold-line); padding: .8rem 1.2rem; border-radius: var(--r-md); z-index: 90; transition: opacity .2s, transform .2s; max-width: calc(100vw - 2rem); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.ghx-toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .ghx-toast { transition: none; } }
+@media print { .ghx-emergency, .ghx-bar, .ghx-toolkit, .ghx-toast { display: none !important; } }
+
+/* header: keep language + toolkit controls tidy next to the existing badge/theme toggle */
+.top-actions { flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 720px) {
+  .top-actions .privacy-badge { display: none; }
+  .ghx-toast { bottom: 84px; }
+}
+.ghx-lang { background-color: var(--input-bg); }
+.ghx-toolkit .btn { width: auto; }
+.ghx-form .btn { width: auto; }
+.ghx-panel .card, .ghx-section .card { position: relative; }
+.ghx-tabs button:hover, .ghx-subtabs button:hover { color: var(--text); }
+.ghx-evlist .card { display: grid; gap: .4rem; }
+.ghx-emergency { margin-inline: auto; }
+@media print { .top, .ghx-lang, .ghx-tk { display: none !important; } }
+
+/* Hindi text in the toolkit and emergency card */
+.ghx-toolkit[lang="hi"], .ghx-emergency[lang="hi"], .ghx-bar[lang="hi"],
+.ghx-toolkit[lang="hi"] :is(h1, h2, h3, h4, button, label, legend, summary),
+.ghx-emergency[lang="hi"] :is(h2, h3, button, label) { font-family: "Noto Sans Devanagari", var(--font-body); letter-spacing: 0; }
